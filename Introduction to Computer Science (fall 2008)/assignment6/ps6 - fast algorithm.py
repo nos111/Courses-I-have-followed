@@ -83,6 +83,18 @@ def get_word_score(word, n):
     if len(word) == n:
         score += 50
     return score
+#build a new dictionarry with the sorted words as keys and the original word as value
+#takes the words list as parameter and return a new rearanged list
+def get_word_rearrangements(words_list):
+    #for every word:
+    #rearrange it's letters alphabetically
+    #build a key with the rearranged word
+    #make the value of the key the real word
+    rearranged_list = {}
+    for word in words_list:
+        rearranged_list[''.join(sorted(word))] = word
+    return rearranged_list
+    
 
 #change the words list to a dicationary where every word is mapped to its value
 #this way we can access the word and it's value instantly
@@ -95,44 +107,35 @@ def get_words_to_points(words_list):
         points_dic[word] = score
     return points_dic
 
-#build a word out of the hand
-#check if it's valid
-#find the best combination of words
-def pick_best_word(hand,points_dic):
+#arrange the hand letters
+#check if they exist in the dictionary
+#remove one letter and continue checking if you don't find any results
+#takes the rearanged dic as parameter
+#prints the found words
+def pick_best_word(hand,rearranged_dic):
     work_hand = []
     for letter in hand.keys():
         for j in range(hand[letter]):
              work_hand.append(letter)
     print work_hand
     #split the hand into a list
-    hand = list(hand)
-    #make all possible words from a hand
-    possible_words = list(''.join(letters) for letters in permutations(hand))
-    #try all words with full hand
-    for word in possible_words:
-        value = is_valid_word(word,points_dic)
-        if value > 0:
-            print word,value
-            return word
-    #split the list into two
-    hand_one = hand[:4]
-    hand_two = hand[4:]
-    #make all possible words from the split
-    possible_word_one = list(''.join(letters) for letters in permutations(hand_one))
-    possible_word_two = list(''.join(letters) for letters in permutations(hand_two))
-    #test them
-    for word in possible_word_one:
-        value = is_valid_word(word,points_dic)
-        if value > 0:
-            print word,value
-            return word
-    for word in possible_word_two:
-        value = is_valid_word(word,points_dic)
-        if value > 0:
-            print word,value
-            return word
-    print 'No solution found'
-    
+    hand = work_hand
+    hand = ''.join(hand)
+    hand = ''.join(sorted(hand))
+
+    for i in range(0,len(hand)):
+        frag = hand[i:]
+        value = rearranged_dic.get(frag,0)
+        if value != 0:
+            print value
+            break
+    for i in range(0,len(hand)):
+        frag = hand[:i]
+        value = rearranged_dic.get(frag,0)
+        if value != 0:
+            print value
+            break
+    print 'no solution'
         
     
 
@@ -308,5 +311,6 @@ def play_game(word_list):
 #
 if __name__ == '__main__':
     word_list = load_words()
+    rearranged_list = get_word_rearrangements(word_list)
     points_dic = get_words_to_points(word_list)
-    play_game(points_dic)
+    play_game(rearranged_list)
