@@ -120,6 +120,7 @@ def pick_best_word(hand,points_dic):
     hand = list(hand)
     #make all possible words from a hand
     possible_words = list(''.join(letters) for letters in permutations(hand))
+    print len(possible_words)
     #try all words with full hand
     for word in possible_words:
         value = is_valid_word(word,points_dic)
