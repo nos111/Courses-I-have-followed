@@ -8,6 +8,7 @@
 #
 import json
 import time
+import copy
 
 SUBJECT_FILENAME = "subjects.txt"
 VALUE, WORK = 0, 1
@@ -116,20 +117,20 @@ def greedyAdvisor(subjects, maxWork, comparator):
     while maxWork > 0:
         #build the keys list
         keys = subjects.keys()
-        print 'list length is ',len(keys), 'and iterator is at ',i
+        #print 'list length is ',len(keys), 'and iterator is at ',i
         #check if the list is only one item than we are done
         if len(keys) == 1:
             #can we still add this item to the chosen subjects?
             if subjects[keys[0]][1] <= maxWork:
                     maxWork = maxWork - subjects[keys[hold]][1]
-                    print 'Max work is now ', maxWork
+                    #print 'Max work is now ', maxWork
                     chosen_subjects[keys[hold]] = subjects[keys[hold]]
                     del subjects[keys[hold]]
-                    print chosen_subjects
+                    #print chosen_subjects
                     return chosen_subjects
             #if not return the chosen subjects list
             else:
-                print chosen_subjects
+                #print chosen_subjects
                 return chosen_subjects
             
         #check the first two items of the subjects
@@ -137,8 +138,8 @@ def greedyAdvisor(subjects, maxWork, comparator):
         #if the first item is bigger continue with comparision
         #and make sure the list is not over
         if max_value == True:
-            print subjects[keys[hold]],subjects[keys[i]],'comparision is true'
-            print 'max work is ',maxWork
+            #print subjects[keys[hold]],subjects[keys[i]],'comparision is true'
+            #print 'max work is ',maxWork
             
             #check if we have reached the end of the list
             if i + 1 >= len(keys):
@@ -146,17 +147,17 @@ def greedyAdvisor(subjects, maxWork, comparator):
                 if subjects[keys[hold]][1] > maxWork:
                     i = 1
                     hold = 0
-                    print 'Removed ', subjects[keys[hold]]
+                    #print 'Removed ', subjects[keys[hold]]
                     del subjects[keys[hold]]
                     continue
                 #if we have than minus from max work(if possible) and add the subject to chosen
                 if subjects[keys[hold]][1] <= maxWork:
                     maxWork = maxWork - subjects[keys[hold]][1]
-                    print 'Max work is now ', maxWork
+                    #print 'Max work is now ', maxWork
                     chosen_subjects[keys[hold]] = subjects[keys[hold]]
                     if maxWork < minimum_working_hours:
-                        print 'luckely ended computation earlier because of low MaxWork'
-                        print chosen_subjects
+                        #print 'luckely ended computation earlier because of low MaxWork'
+                        #print chosen_subjects
                         return chosen_subjects
                         
                     #remove this item because it's bigger than maxwork now
@@ -173,23 +174,23 @@ def greedyAdvisor(subjects, maxWork, comparator):
         #if we are at the end of the list than we need to make the second decision tree with a
         #take of the values on the other hand
         if max_value == False:
-            print subjects[keys[hold]],subjects[keys[i]],'comparision is false'
+            #print subjects[keys[hold]],subjects[keys[i]],'comparision is false'
             if i + 1 >= len(keys):
                 #if the value is bigger than max work delete the course from the list
                 if subjects[keys[i]][1] > maxWork:
                     i = 1
                     hold = 0
-                    print 'Removed ', subjects[keys[i]]
+                    #print 'Removed ', subjects[keys[i]]
                     del subjects[keys[i]]
                     continue
                 #if we have than minus from max work(if possible) and add the subject to chosen
                 if subjects[keys[i]][1] <= maxWork:
                     maxWork = maxWork - subjects[keys[i]][1]
-                    print 'Max work is now ', maxWork
+                    #print 'Max work is now ', maxWork
                     chosen_subjects[keys[i]] = subjects[keys[i]]
                     if maxWork < minimum_working_hours:
-                        print 'luckely ended computation earlier because of low MaxWork'
-                        print chosen_subjects
+                        #print 'luckely ended computation earlier because of low MaxWork'
+                        #print chosen_subjects
                         return chosen_subjects
                     #remove this item because it's bigger than maxwork now
                     del subjects[keys[i]]
@@ -200,13 +201,10 @@ def greedyAdvisor(subjects, maxWork, comparator):
             #continue iteration if no valid situation is found
             hold = i
             i += 1
-            print 'next comparision is ', subjects[keys[hold]],subjects[keys[i]]
+            #print 'next comparision is ', subjects[keys[hold]],subjects[keys[i]]
 
     return chosen_subjects
         
-smallCatalog = {'6.00': (16, 8),'1.00': (7, 7),'6.01': (5, 3),'15.01': (9, 6)}
-chosen = greedyAdvisor(smallCatalog, 15, cmpValue)
-printSubjects(chosen)
 
 def bruteForceAdvisor(subjects, maxWork):
     """
@@ -253,6 +251,9 @@ def bruteForceAdvisorHelper(subjects, maxWork, i, bestSubset, bestSubsetValue,
 
 #
 # Problem 3: Subject Selection By Brute Force
+
+
+
 #
 def bruteForceTime():
     """
@@ -260,12 +261,39 @@ def bruteForceTime():
     an answer.
     """
     # TODO...
+    smallCatalog = copy.deepcopy(subjects_dic)
+    begin = time.time()
+    chosen = greedyAdvisor(smallCatalog, 15, cmpWork)
+    end = time.time()
+    printSubjects(chosen)
+    print 'Calculated in ',end - begin
+    smallCatalog = subjects_dic
+    begin_brute = time.time()
+    chosen_brute = bruteForceAdvisor(smallCatalog, 15)
+    end_brute = time.time()
+    printSubjects(chosen_brute)
+    print 'calculated in ', end_brute - begin_brute
 
 # Problem 3 Observations
 # ======================
 #
 # TODO: write here your observations regarding bruteForceTime's performance
+""""
+First test:
+on a list of 50 courses the two methods were tested.
+The greedy method finished in 0.0310001373291
+the brute force method finished in 0.285000085831
 
+Second test:
+The bruteforce method and the greedy method were tested on a list of 320 courses.
+The greedy method solved the problem in 0.0130000114441
+I have waited for the brute force to finish for 53 minutes. And it didn't finish.
+On second try:
+The greedy method finished in 0.0149998664856
+I have waited for hte brute force for 26 minutes to finish and still didn't get an answer
+
+
+""""
 #
 # Problem 4: Subject Selection By Dynamic Programming
 #

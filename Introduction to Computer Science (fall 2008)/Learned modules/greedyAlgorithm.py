@@ -1,5 +1,5 @@
 """
-This is a basic model of the decision tree in the greedy algorithm
+This is a basic model of the greedy algorithm
 everytime is evaluated to take the item or not based on it's value and what fits in the bag
 It's made for chosing the courses with the biggest value with the avaiable
 amount of time
