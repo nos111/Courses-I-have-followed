@@ -101,112 +101,59 @@ def cmpRatio(subInfo1, subInfo2):
 #
 # Problem 2: Subject Selection By Greedy Optimization
 #
-def greedyAdvisor(subjects, maxWork, comparator):
-    #find the minimum value of the working hours so we can stop when we hit it.
+def greedyAdvisor(subjects, maxWork, comparator,memo):
+    #find first the minimum amount of hours
     subjects_keys = subjects.keys()
     work_hours = []
     for key in subjects_keys:
         work_hours.append(subjects[key][1])
     minimum_working_hours = min(work_hours)
-    #introduce answer and condition with true
+    global s
+    s = 0
     chosen_subjects = {}
-    #introduce iterator
-    i = 1
-    hold = 0
-    #do a while maxwork is bigger than 0
-    global number_of_times
-    number_of_times = 0
+    refined_list = copy.deepcopy(subjects)
     while maxWork > 0:
-        number_of_times += 1
-        #compare every two items in the list
-        #make the big one the key for those two problems
-        #build the keys list
-        keys = subjects.keys()
-        #print 'list length is ',len(keys), 'and iterator is at ',i
-        #check if the list is only one item than we are done
-        if len(keys) == 1:
-            #can we still add this item to the chosen subjects?
-            if subjects[keys[0]][1] <= maxWork:
-                    maxWork = maxWork - subjects[keys[hold]][1]
-                    #print 'Max work is now ', maxWork
-                    chosen_subjects[keys[hold]] = subjects[keys[hold]]
-                    del subjects[keys[hold]]
-                    #print chosen_subjects
-                    return chosen_subjects
-            #if not return the chosen subjects list
-            else:
+        if maxWork < minimum_working_hours:
+            #print 'luckely ended computation earlier because of low MaxWork'
+            #print chosen_subjects
+            return chosen_subjects
+        #check if we have one item left
+        #check if we can substract it
+        #remove it from the subjects and substract
+        if len(refined_list.keys()) == 1:
+            if refined_list[refined_list.keys()[0]][1] <= maxWork:
+                maxWork = maxWork - refined_list[refined_list.keys()[0]][1]
+                #print 'max work is now ', maxWork
+                chosen_subjects[refined_list.keys()[0]] = refined_list[refined_list.keys()[0]]
                 #print chosen_subjects
-                return chosen_subjects
-            
-        #check the first two items of the subjects
-        max_value = comparator(subjects[keys[hold]],subjects[keys[i]])
-        #if the first item is bigger continue with comparision
-        #and make sure the list is not over
-        if max_value == True:
-            #print subjects[keys[hold]],subjects[keys[i]],'comparision is true'
-            #print 'max work is ',maxWork
-            
-            #check if we have reached the end of the list
-            if i + 1 >= len(keys):
-                #if the value is bigger than max work delete the course from the list
-                if subjects[keys[hold]][1] > maxWork:
-                    i = 1
-                    hold = 0
-                    #print 'Removed ', subjects[keys[hold]]
-                    del subjects[keys[hold]]
-                    continue
-                #if we have than minus from max work(if possible) and add the subject to chosen
-                if subjects[keys[hold]][1] <= maxWork:
-                    maxWork = maxWork - subjects[keys[hold]][1]
-                    #print 'Max work is now ', maxWork
-                    chosen_subjects[keys[hold]] = subjects[keys[hold]]
-                    if maxWork < minimum_working_hours:
-                        #print 'luckely ended computation earlier because of low MaxWork'
-                        #print chosen_subjects
-                        return chosen_subjects
-                        
-                    #remove this item because it's bigger than maxwork now
-                    del subjects[keys[hold]]
-                    #reset the counters to start comparing
-                    i = 1
-                    hold = 0
-                    continue
-            #continue iteration if no valid situation is found
-            i += 1
-                
-        #if the second item is bigger(false) make the holder the second item
-        #check first to make sure we are not at the end of the list
-        #if we are at the end of the list than we need to make the second decision tree with a
-        #take of the values on the other hand
-        if max_value == False:
-            #print subjects[keys[hold]],subjects[keys[i]],'comparision is false'
-            if i + 1 >= len(keys):
-                #if the value is bigger than max work delete the course from the list
-                if subjects[keys[i]][1] > maxWork:
-                    i = 1
-                    hold = 0
-                    #print 'Removed ', subjects[keys[i]]
-                    del subjects[keys[i]]
-                    continue
-                #if we have than minus from max work(if possible) and add the subject to chosen
-                if subjects[keys[i]][1] <= maxWork:
-                    maxWork = maxWork - subjects[keys[i]][1]
-                    #print 'Max work is now ', maxWork
-                    chosen_subjects[keys[i]] = subjects[keys[i]]
-                    if maxWork < minimum_working_hours:
-                        #print 'luckely ended computation earlier because of low MaxWork'
-                        #print chosen_subjects
-                        return chosen_subjects
-                    #remove this item because it's bigger than maxwork now
-                    del subjects[keys[i]]
-                    #reset the counters to start comparing
-                    i = 1
-                    hold = 0
-                    continue
-            #continue iteration if no valid situation is found
-            hold = i
-            i += 1
-            #print 'next comparision is ', subjects[keys[hold]],subjects[keys[i]]
+                del subjects[refined_list.keys()[0]]
+                refined_list = copy.deepcopy(subjects)
+            if refined_list[refined_list.keys()[0]][1] > maxWork:
+                del subjects[refined_list.keys()[0]]
+                refined_list = copy.deepcopy(subjects)
+        if len(refined_list.keys()) < 1:
+            #print chosen_subjects
+            return chosen_subjects
+        else:  
+            #find the subjects keys
+            keys = refined_list.keys()
+            #compare every two elements
+            i = 0
+            #print 'length of possibilities is ', len(keys)
+            for x in range (0, len(keys)/2):
+                try:
+                    checker = memo[keys[i] + keys[i+1]]
+                except KeyError:
+                    checker = comparator(refined_list[keys[i]],refined_list[keys[i+1]])
+                    memo[keys[i] + keys[i+1]] = checker
+                #print 'checker is ',checker , 'for ',refined_list[keys[i]],refined_list[keys[i+1]]
+                if checker == False:
+                    del refined_list[keys[i]]
+                if checker == True:
+                    del refined_list[keys[i + 1]]
+                #print refined_list
+                i +=2
+        s += 1
     
     return chosen_subjects
         
@@ -336,10 +283,11 @@ if __name__ == '__main__':
     keys = smallCatalog.keys()
     print 'List length is ', len(keys)
     begin = time.time()
-    chosen = greedyAdvisor(smallCatalog, 15, cmpWork)
+    memo = {}
+    chosen = greedyAdvisor(smallCatalog, 15, cmpWork,memo)
     end = time.time()
     printSubjects(chosen)
     print 'Calculated in ',end - begin
-    print 'Iterated ', number_of_times
-    #printSubjects(subjects_dic)
+    print 'Iterated ', s
+
     
