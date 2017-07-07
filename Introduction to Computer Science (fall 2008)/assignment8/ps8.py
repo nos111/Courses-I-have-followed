@@ -318,20 +318,30 @@ def dpAdvisor(subjects, maxWork):
     
             
 def dpAdvisorFast (subjects,maxWork,memo):
+    #extract the keys and find the minimum value in the courses
+    #this way we can stop earlier if maxwork is lower than the lowest value
     subjects_keys = subjects.keys()
     work_hours = []
     for key in subjects_keys:
         work_hours.append(subjects[key][1])
     minimum_working_hours = min(work_hours)
     chosen_subjects = {}
+    #iterator over the whole object
     i = 1
+    #item we will hold on to compare with other items
+    #it will be the item we have at the end of the iteration
     holder = 0
+    
     while maxWork > 0:
+        #generate the keys everytime we start because the items we use are deleted
         subjects_keys = subjects.keys()
         #print 'iterator is at ', i
+        #if the length of the keys is 1 than we only have one item left and its time to stop
         if len(subjects_keys) == 1:
             print 'List is too short to go on, results is ',chosen_subjects
             return chosen_subjects
+        #if the iterator is at the end of the list start the calculations
+        #because the holder has the item that passed the tests 
         if i == len(subjects_keys):
             if subjects[subjects_keys[holder]][1] <= maxWork:
                     maxWork = maxWork - subjects[subjects_keys[holder]][1]
@@ -343,6 +353,7 @@ def dpAdvisorFast (subjects,maxWork,memo):
                         #print 'computation ended'
                         #print chosen_subjects
                         return chosen_subjects
+                    #reset the values to start again
                     i = 1
                     holder = 0
                     continue
@@ -351,6 +362,8 @@ def dpAdvisorFast (subjects,maxWork,memo):
                i = 1
                holder = 0
                continue
+        #memoization for every calculation we have made
+        #i start by adding them so the list will be well organized
         try:
             work_check = memo[subjects_keys[holder]+subjects_keys[i]][0]
         except (IndexError,KeyError):
@@ -361,18 +374,18 @@ def dpAdvisorFast (subjects,maxWork,memo):
             ratio_check = memo[subjects_keys[holder]+subjects_keys[i]][1]
         except (IndexError,KeyError):
             ratio_check = cmpRatio(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
-            #memo[subjects_keys[holder]+subjects_keys[i]] = []
             memo[subjects_keys[holder]+subjects_keys[i]].append(ratio_check)
 
         try:
             value_check = memo[subjects_keys[holder]+subjects_keys[i]][2]
         except (IndexError,KeyError):
             value_check = cmpValue(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
-            #memo[subjects_keys[holder]+subjects_keys[i]] = []
             memo[subjects_keys[holder]+subjects_keys[i]].append(value_check)
            
-        #check if i have the lowest work possible
-        #print 'checker is ',work_check, 'for ',subjects[subjects_keys[holder]],subjects[subjects_keys[i]]
+        #check if i have the lowest work value between the two items
+        #check if it has the highest ratio also
+        #if it does keep the value of the holder
+        #if it doesn't qualify make the other item my holder
         if work_check == True:
             #check the ratio to see which one is better to take
             if ratio_check == True:
@@ -382,14 +395,11 @@ def dpAdvisorFast (subjects,maxWork,memo):
                 holder = i
                 i += 1
                 
-            #if i do, move on with the checking
-            #becuase i'm looking for the lowest work with the highest value
-            
         #does the other item has lower work?
         if work_check == False:
         #if yes check it's value to see if it has more value take it
             if value_check == True:
-                #ratio_check = cmpRatio(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
+                #also check if the ratio is lower before we give it up
                 if ratio_check == True:
                     i += 1
                     continue
