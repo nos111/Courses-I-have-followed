@@ -102,7 +102,10 @@ def cmpRatio(subInfo1, subInfo2):
 # Problem 2: Subject Selection By Greedy Optimization
 #
 def greedyAdvisor(subjects, maxWork, comparator,memo):
-    #find first the minimum amount of hours
+    """
+    The idea is to map the whole dictionary I have with a ranking depending on their valuses
+    this way I can chose the subject I want to delete very fast and with minimum calculations
+    """
     subjects_keys = subjects.keys()
     work_hours = []
     for key in subjects_keys:
@@ -111,51 +114,86 @@ def greedyAdvisor(subjects, maxWork, comparator,memo):
     global s
     s = 0
     chosen_subjects = {}
-    refined_list = copy.deepcopy(subjects)
-    while maxWork > 0:
-        if maxWork < minimum_working_hours:
-            #print 'luckely ended computation earlier because of low MaxWork'
-            #print chosen_subjects
-            return chosen_subjects
-        #check if we have one item left
-        #check if we can substract it
-        #remove it from the subjects and substract
-        if len(refined_list.keys()) == 1:
-            if refined_list[refined_list.keys()[0]][1] <= maxWork:
-                maxWork = maxWork - refined_list[refined_list.keys()[0]][1]
-                #print 'max work is now ', maxWork
-                chosen_subjects[refined_list.keys()[0]] = refined_list[refined_list.keys()[0]]
-                #print chosen_subjects
-                del subjects[refined_list.keys()[0]]
-                refined_list = copy.deepcopy(subjects)
-            if refined_list[refined_list.keys()[0]][1] > maxWork:
-                del subjects[refined_list.keys()[0]]
-                refined_list = copy.deepcopy(subjects)
-        if len(refined_list.keys()) < 1:
-            #print chosen_subjects
-            return chosen_subjects
-        else:  
-            #find the subjects keys
-            keys = refined_list.keys()
-            #compare every two elements
-            i = 0
-            #print 'length of possibilities is ', len(keys)
-            for x in range (0, len(keys)/2):
-                try:
-                    checker = memo[keys[i] + keys[i+1]]
-                except KeyError:
-                    checker = comparator(refined_list[keys[i]],refined_list[keys[i+1]])
-                    memo[keys[i] + keys[i+1]] = checker
-                #print 'checker is ',checker , 'for ',refined_list[keys[i]],refined_list[keys[i+1]]
-                if checker == False:
-                    del refined_list[keys[i]]
-                if checker == True:
-                    del refined_list[keys[i + 1]]
-                #print refined_list
-                i +=2
-        s += 1
+    memo[len(subjects_keys)] = copy.deepcopy(subjects)
+    counter = len(memo[len(subjects_keys)])
+    z = 1
     
-    return chosen_subjects
+    while maxWork > 0:
+        try:
+            memo[1]
+            print memo[1]
+            sorted_keys = sorted(memo.keys())
+            for x in sorted_keys:
+                #print 'Before sorting',memo[x].keys()
+                subject_keys = sorted(memo[x].keys(), key = lambda subject: memo[x][subject][1])
+                #print subject_keys
+                
+                                      
+                for t in range(0,len(memo[x].keys())):
+                    s+=1
+                    if memo[x][memo[x].keys()[t]][1] < maxWork:
+                        maxWork = maxWork - memo[x][memo[x].keys()[t]][1]
+                        chosen_subjects[memo[x].keys()[t]] =  memo[x][memo[x].keys()[t]]
+            return chosen_subjects
+        except KeyError:
+            keys = memo[counter].keys()
+            i = 0
+            memo[counter/2] = {}
+            for x in range (0, counter/2):     
+                checker = comparator(memo[counter][keys[i]],memo[counter][keys[i + 1]])
+                #print 'checker is ',checker , 'for ',memo[counter][keys[i]],memo[counter][keys[i + 1]]
+                if checker == False:
+                    memo[counter/2][keys[i + 1]] = {}
+                    memo[counter/2][keys[i + 1]] = memo[counter][keys[i + 1]]
+                if checker == True:
+                    memo[counter/2][keys[i]] = {}
+                    memo[counter/2][keys[i]] = memo[counter][keys[i]]
+                
+                i +=2
+            counter = counter / 2
+##        if maxWork < minimum_working_hours:
+##            #print 'luckely ended computation earlier because of low MaxWork'
+##            #print chosen_subjects
+##            return chosen_subjects
+##        #check if we have one item left
+##        #check if we can substract it
+##        #remove it from the subjects and substract
+##        if len(refined_list.keys()) == 1:
+##            if refined_list[refined_list.keys()[0]][1] <= maxWork:
+##                maxWork = maxWork - refined_list[refined_list.keys()[0]][1]
+##                #print 'max work is now ', maxWork
+##                chosen_subjects[refined_list.keys()[0]] = refined_list[refined_list.keys()[0]]
+##                #print chosen_subjects
+##                del subjects[refined_list.keys()[0]]
+##                refined_list = copy.deepcopy(subjects)
+##            if refined_list[refined_list.keys()[0]][1] > maxWork:
+##                del subjects[refined_list.keys()[0]]
+##                refined_list = copy.deepcopy(subjects)
+##        if len(refined_list.keys()) < 1:
+##            #print chosen_subjects
+##            return chosen_subjects
+##        else:  
+##            #find the subjects keys
+##            keys = refined_list.keys()
+##            #compare every two elements
+##            i = 0
+##            #print 'length of possibilities is ', len(keys)
+##            for x in range (0, len(keys)/2):
+##                try:
+##                    checker = memo[keys[i] + keys[i+1]]
+##                except KeyError:
+##                    checker = comparator(refined_list[keys[i]],refined_list[keys[i+1]])
+##                    memo[keys[i] + keys[i+1]] = checker
+##                #print 'checker is ',checker , 'for ',refined_list[keys[i]],refined_list[keys[i+1]]
+##                if checker == False:
+##                    del refined_list[keys[i]]
+##                if checker == True:
+##                    del refined_list[keys[i + 1]]
+##                #print refined_list
+##                i +=2
+##        s += 1
+##    
+##    return chosen_subjects
         
 
 def bruteForceAdvisor(subjects, maxWork):
@@ -258,7 +296,9 @@ def dpAdvisor(subjects, maxWork):
     maxWork: int >= 0
     returns: dictionary mapping subject name to (value, work)
     """
-    # TODO...
+
+
+    
 
 #
 # Problem 5: Performance Comparison
@@ -279,15 +319,17 @@ if __name__ == '__main__':
     #subjects_dic = loadSubjects(SUBJECT_FILENAME)
     with open('data.txt') as json_data:
         subjects_dic = json.load(json_data)
-    smallCatalog = subjects_dic
-    keys = smallCatalog.keys()
-    print 'List length is ', len(keys)
-    begin = time.time()
-    memo = {}
-    chosen = greedyAdvisor(smallCatalog, 15, cmpWork,memo)
-    end = time.time()
-    printSubjects(chosen)
-    print 'Calculated in ',end - begin
-    print 'Iterated ', s
+    #smallCatalog = subjects_dic
+    smallCatalog = {'6.00': (16, 8),'1.00': (7, 7),'6.01': (5, 3),'15.01': (9, 6)} 
+    dpAdvisor(smallCatalog,15)
+##    keys = smallCatalog.keys()
+##    print 'List length is ', len(keys)
+##    begin = time.time()
+##    memo = {}
+##    chosen = greedyAdvisor(smallCatalog, 30, cmpValue,memo)
+##    end = time.time()
+##    printSubjects(chosen)
+##    print 'Calculated in ',end - begin
+##    print 'Iterated ', s
 
     

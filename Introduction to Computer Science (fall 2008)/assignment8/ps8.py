@@ -311,7 +311,80 @@ def dpAdvisor(subjects, maxWork):
     maxWork: int >= 0
     returns: dictionary mapping subject name to (value, work)
     """
-    # TODO...
+    subjects_keys = subjects.keys()
+    work_hours = []
+    for key in subjects_keys:
+        work_hours.append(subjects[key][1])
+    minimum_working_hours = min(work_hours)
+    global s
+    s = 0
+    chosen_subjects = {}
+    memo = {}
+    z = 1
+    i = 1
+    holder = 0
+    while maxWork > 0:
+        subjects_keys = subjects.keys()
+        #print 'iterator is at ', i
+        if len(subjects_keys) == 1:
+            print 'List is too short to go on, results is ',chosen_subjects
+            return chosen_subjects
+        if i == len(subjects_keys):
+            if subjects[subjects_keys[holder]][1] <= maxWork:
+                    maxWork = maxWork - subjects[subjects_keys[holder]][1]
+                    print 'Max work is now ', maxWork
+                    chosen_subjects[subjects_keys[holder]] = subjects[subjects_keys[holder]]
+                    del subjects[subjects_keys[holder]]
+                    print chosen_subjects
+                    if maxWork < minimum_working_hours or len(subjects_keys) == 1:
+                        print 'computation ended'
+                        print chosen_subjects
+                        return chosen_subjects
+                    i = 1
+                    holder = 0
+                    continue
+            else:
+               del subjects[subjects_keys[holder]]
+               i = 1
+               holder = 0
+               continue
+        work_check = cmpWork(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
+        #check if i have the lowest work possible
+        #print 'checker is ',work_check, 'for ',subjects[subjects_keys[holder]],subjects[subjects_keys[i]]
+        if work_check == True:
+            #check the ratio to see which one is better to take
+            ratio_check = cmpRatio(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
+            if ratio_check == True:
+                i += 1
+                continue
+            else:
+                holder = i
+                i += 1
+                
+            #if i do, move on with the checking
+            #becuase i'm looking for the lowest work with the highest value
+            
+        #does the other item has lower work?
+        if work_check == False:
+        #if yes check it's value to see if it has more value take it
+            value_check = cmpValue(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
+            if value_check == True:
+                ratio_check = cmpRatio(subjects[subjects_keys[holder]],subjects[subjects_keys[i]])
+                if ratio_check == True:
+                    i += 1
+                    continue
+                else:
+                    holder = i
+                    i += 1
+            if value_check == False:
+                holder = i
+                i = i + 1
+                continue
+        #continue iterating until we hit the end of the list
+        #if we are at the end of the list minus it from the maxwork
+        #also add it to the chosen subjects
+            
+    
 
 #
 # Problem 5: Performance Comparison
@@ -329,17 +402,19 @@ def dpTime():
 # how its performance compares to that of bruteForceAdvisor.
 
 if __name__ == '__main__':
-    #subjects_dic = loadSubjects(SUBJECT_FILENAME)
+      #subjects_dic = loadSubjects(SUBJECT_FILENAME)
     with open('data.txt') as json_data:
         subjects_dic = json.load(json_data)
     smallCatalog = subjects_dic
-    keys = smallCatalog.keys()
-    print 'List length is ', len(keys)
-    begin = time.time()
-    chosen = greedyAdvisor(smallCatalog, 15, cmpWork)
-    end = time.time()
+    #smallCatalog = {'6.00': (16, 8),'1.00': (7, 7),'6.01': (5, 3),'15.01': (9, 6)} 
+    chosen = dpAdvisor(smallCatalog,30)
+##    keys = smallCatalog.keys()
+##    print 'List length is ', len(keys)
+##    begin = time.time()
+##    memo = {}
+##    chosen = greedyAdvisor(smallCatalog, 30, cmpValue,memo)
+##    end = time.time()
     printSubjects(chosen)
-    print 'Calculated in ',end - begin
-    print 'Iterated ', number_of_times
-    #printSubjects(subjects_dic)
+##    print 'Calculated in ',end - begin
+##    print 'Iterated ', s
     
