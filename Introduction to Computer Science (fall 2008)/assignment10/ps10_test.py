@@ -27,6 +27,18 @@ def testHand():
     h.update('dad')
     testResult(h.containsLetters('ab') or not h.isEmpty())
     h.update('ab')
+    print h.isEmpty()
+    testResult(h.isEmpty())
+
+    h = Hand(14, {'a':3, 'm':2,'x':1,'f':1,'u':1,'r':2,'y':1,'o':1, 'd':2})
+    h.update('mad')
+    testResult(h.containsLetters('maxfuryroad') and not h.isEmpty())
+    h.update('max')
+    testResult(h.containsLetters('furyroad') or not h.isEmpty())
+    h.update('fury')
+    testResult(h.containsLetters('road') or not h.isEmpty())
+    h.update('road')
+    print h.isEmpty()
     testResult(h.isEmpty())
 
 def testPlayer():
@@ -52,10 +64,10 @@ def testAll():
     Run all Tests
     """
 
-    print "Uncomment the tests in this file as you complete each problem."
+    #print "Uncomment the tests in this file as you complete each problem."
 
-    # print 'PROBLEM 2 -----------------------------------------'
-    # testHand()
+    print 'PROBLEM 2 -----------------------------------------'
+    testHand()
 
     # print 'PROBLEM 3 -----------------------------------------'
     # testPlayer()

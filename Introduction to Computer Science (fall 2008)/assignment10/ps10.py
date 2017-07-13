@@ -2,6 +2,7 @@
 
 import random
 import string
+import wx
 
 # Global Constants
 VOWELS = 'aeiou'
@@ -77,6 +78,17 @@ class Hand(object):
         postcondition: Letters in word are removed from this hand
         """
         # TODO
+        #get the frequency of the word
+        wordFreq = getFrequencyDict(word)
+        #loop over the hand with the letters
+        for key in self.handDict.keys():
+            #for everyone minus 1 from the hand
+            #print 'old hand is ',self.handDict
+            self.handDict[key] = self.handDict.get(key,0) - wordFreq.get(key,0)
+        #print 'new hand is ',self.handDict
+        return self.handDict
+        
+        
     def containsLetters(self, letters):
         """
         Test if this hand contains the characters required to make the input
@@ -86,6 +98,13 @@ class Hand(object):
         False otherwise
         """
         # TODO
+        #loop over the hand to see if it has all the letters
+        for char in letters:
+            #if one of them is false return false
+            if self.handDict.get(char,0) == 0:
+                return False
+        return True
+        #if you complete return the state
     def isEmpty(self):
         """
         Test if there are any more letters left in this hand.
@@ -93,6 +112,11 @@ class Hand(object):
         returns: True if there are no letters remaining, False otherwise.
         """
         # TODO
+        for key in self.handDict.keys():
+            #if one of them is false return false
+            if self.handDict[key] != 0:
+                return False
+        return True
     def __eq__(self, other):
         """
         Equality test, for testing purposes
@@ -101,6 +125,17 @@ class Hand(object):
         the other Hand, False otherwise
         """
         # TODO
+        #first check if they have the same amount of keys
+        if len(self.handDict.keys()) != len(other.handDict.keys()):
+            return False
+        #than check if the two sorted arrays are equal
+        if sorted(self.handDict.keys()) != sorted(other.handDict.keys()):
+            return False
+        #than check if every hand has the same amount of letters
+        for key in self.handDict.keys():
+            if self.handDict[key] != other.handDict[key]:
+                return False
+        return True
     def __str__(self):
         """
         Represent this hand as a string
