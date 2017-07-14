@@ -177,7 +177,6 @@ class Player(object):
 
         returns: the Hand object associated with this player.
         """
-        # TODO
         return self.hand
     def addPoints(self, points):
         """
@@ -187,7 +186,7 @@ class Player(object):
 
         postcondition: this player's total score is increased by points
         """
-        # TODO
+
         self.points = self.points + points
         
     def getPoints(self):
@@ -196,8 +195,8 @@ class Player(object):
 
         returns: A float specifying this player's score
         """
-        # TODO
         return float(self.points)
+    
     def getIdNum(self):
         """
         Return this player's ID number (either 1 for player 1 or
@@ -205,8 +204,8 @@ class Player(object):
 
         returns: An integer specifying this player's ID number.
         """
-        # TODO
         return self.idNum
+    
     def __cmp__(self, other):
         """
         Compare players by their scores.
@@ -215,8 +214,8 @@ class Player(object):
         -1 if this player's score is less than other player's score, and 0 if
         they're equal.
         """
-        # TODO
         return cmp(self.points,other.points)
+    
     def __str__(self):
         """
         Represent this player as a string
@@ -243,7 +242,21 @@ class ComputerPlayer(Player):
         returns: The best word (a string), given the computer player's hand and
         the wordlist
         """
-        # TODO
+        wordIHave = {}
+        #iterate over the words from the dictionary
+        #find the ones I can make from my hand
+        #compute the value of each one and add them to my dictionary
+        #cehck the max value in my dict and use it as best word
+        hand = self.getHand()
+        for word in wordlist.getList():
+            if self.getHand().containsLetters(word) == True:
+                wordValue = getWordScore(word)
+                wordIHave[word] = wordValue
+        maxValue = max(wordIHave.keys(), key=lambda word : wordIHave[word])
+
+        return maxValue
+            
+            
     def playHand(self, callback, wordlist):
         """
         Play a hand completely by passing chosen words to the callback

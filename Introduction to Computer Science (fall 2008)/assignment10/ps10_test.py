@@ -62,7 +62,7 @@ def testComputerPlayer():
     """
     wordlist = Wordlist()
     p = ComputerPlayer(1, Hand(6, {'c':1, 'a':1, 'b':1 ,'d':1, 'o':1, 'e':1}))
-    testResult(getWordScore(p.pickBestWord(wordlist)) == getWordScore('abode'))
+    testResult(getWordScore(p.pickBestWord(wordlist)) == getWordScore('bobbed'))
 
 def testAll():
     """
@@ -74,10 +74,10 @@ def testAll():
     #print 'PROBLEM 2 -----------------------------------------'
     #testHand()
 
-    print 'PROBLEM 3 -----------------------------------------'
-    testPlayer()
+    #print 'PROBLEM 3 -----------------------------------------'
+    #testPlayer()
 
     # print 'PROBLEM 4 -----------------------------------------'
-    # testComputerPlayer()
+    testComputerPlayer()
 
 testAll()
