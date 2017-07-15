@@ -61,7 +61,8 @@ def testComputerPlayer():
     Test the ComputerPlayer class. Add your own test cases.
     """
     wordlist = Wordlist()
-    p = ComputerPlayer(1, Hand(6, {'c':1, 'a':1, 'b':1 ,'d':1, 'o':1, 'e':1}))
+    p = ComputerPlayer(1, Hand(30, {'a':2, 'c':1, 'b':1 ,'e':3, 'd':1,'g':2,'i':2,'h':2,'o':1,'n':3,'p':1,'s':1,'r':1,'u':2,'w':3,'v':1,'x':2,'z':1}))
+    print p.pickBestWord(wordlist)
     testResult(getWordScore(p.pickBestWord(wordlist)) == getWordScore('bobbed'))
 
 def testAll():

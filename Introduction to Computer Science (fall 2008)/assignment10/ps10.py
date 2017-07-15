@@ -99,10 +99,12 @@ class Hand(object):
         """
         # TODO
         #loop over the hand to see if it has all the letters
-        for char in letters:
+        lettersFreq = getFrequencyDict(letters)
+        for key in lettersFreq.keys():
             #if one of them is false return false
-            if self.handDict.get(char,0) == 0:
-                return False
+            if self.handDict.get(key,0) >= lettersFreq[key]:
+                continue
+            else: return False
         return True
         #if you complete return the state
     def isEmpty(self):
@@ -247,12 +249,16 @@ class ComputerPlayer(Player):
         #find the ones I can make from my hand
         #compute the value of each one and add them to my dictionary
         #cehck the max value in my dict and use it as best word
-        hand = self.getHand()
+        maxValue = ''
+        print self.getHand()
         for word in wordlist.getList():
             if self.getHand().containsLetters(word) == True:
                 wordValue = getWordScore(word)
                 wordIHave[word] = wordValue
-        maxValue = max(wordIHave.keys(), key=lambda word : wordIHave[word])
+        if wordIHave != {}:
+            maxValue = max(wordIHave.keys(), key=lambda word : wordIHave[word])
+        else: maxValue = '.'
+        #self.hand = self.hand.update(maxValue)
 
         return maxValue
             
