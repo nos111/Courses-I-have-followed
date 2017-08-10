@@ -30,6 +30,10 @@ Functions to provide analytical data are provided:
 
 
 - “showPlot3” Produces a plot showing dependence of cleaning time on room shape.
+<img src="https://github.com/nos111/MIT-OCW/blob/master/Introduction%20to%20Computer%20Science%20(fall%202008)/assignment11/images/GraphTimeVSRoomSizeRatio.jpg?raw=true">
+
 - “showPlot4” Produces a plot showing cleaning time vs. percentage cleaned, for
     each of 1-5 robots.
+<img src="https://github.com/nos111/MIT-OCW/blob/master/Introduction%20to%20Computer%20Science%20(fall%202008)/assignment11/images/GraphTimeVSPercentageCleaned.png?raw=true">
+
 - "showPlot5" Produces a plot comparing the two robot strategies.
