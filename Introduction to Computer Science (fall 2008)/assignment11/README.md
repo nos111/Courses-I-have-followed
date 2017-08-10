@@ -10,28 +10,28 @@ The robot follow this cleaning strategy:
 
 I have tried different angels and from the results I got, 30 degrees gave the best results and the fastest cleaning.
 
-The function ëupdatePositionAndCleaní in the robot class controls the movement strategy of the robot.
+The function ‚ÄòupdatePositionAndClean‚Äô in the robot class controls the movement strategy of the robot.
 
 In each function is a short explanations of what the functions is expected to do.
 Each step is also explained in the inline comments.
 
-If you uncomment the ëanimí in the ërunSimulationí you will be able to see the robot moving in the room:
+If you uncomment the ‚Äòanim‚Äô in the ‚ÄòrunSimulation‚Äô you will be able to see the robot moving in the room:
 
 Photo of robot movement
 <img src='https://github.com/nos111/MIT-OCW/blob/master/Introduction%20to%20Computer%20Science%20(fall%202008)/assignment11/images/RobotMovementSimulation.jpg?raw=true'>
 
 
 Functions to provide analytical data are provided:
--ìshowPlot1î  Produces a plot showing dependence of cleaning time on room size.
+-‚ÄúshowPlot1‚Äù  Produces a plot showing dependence of cleaning time on room size.
 <img src='https://github.com/nos111/MIT-OCW/blob/master/Introduction%20to%20Computer%20Science%20(fall%202008)/assignment11/images/GraphTimeXRoomSize.jpg?raw=true'>
 
 
-- ìshowPlot2í Produces a plot showing dependence of cleaning time on number of robots.
+- ‚ÄúshowPlot2‚Äô Produces a plot showing dependence of cleaning time on number of robots.
 <img src='https://github.com/nos111/MIT-OCW/blob/master/Introduction%20to%20Computer%20Science%20(fall%202008)/assignment11/images/GraphTimeVSRobotsNumber.jpg?raw=true'>
 
 
-- ìshowPlot3î Produces a plot showing dependence of cleaning time on room shape.
-- ìshowPlot4î Produces a plot showing cleaning time vs. percentage cleaned, for
+- ‚ÄúshowPlot3‚Äù Produces a plot showing dependence of cleaning time on room shape.
+- ‚ÄúshowPlot4‚Äù Produces a plot showing cleaning time vs. percentage cleaned, for
     each of 1-5 robots.
 - "showPlot5" Produces a plot comparing the two robot strategies.
 

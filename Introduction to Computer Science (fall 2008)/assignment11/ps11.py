@@ -310,7 +310,7 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
                 RandomWalkRobot)
     visualize: a boolean (True to turn on visualization)
     """
-    # TODO: Your code goes here
+
     #initiate results list
     endResults = []
     trialResults = []
@@ -458,7 +458,7 @@ def showPlot2(numberRobots, room, percentageToClean, robotType, show):
    
 roomPlot2 = [{'width': 25, 'height': 25}]
 
-showPlot2(10,roomPlot2, 0.75, Robot, True)
+#showPlot2(10,roomPlot2, 0.75, Robot, True)
         
 
 def showPlot3(numberOfRobots, roomSizeArray, percentageToClean, robotType, show):
@@ -519,7 +519,7 @@ def showPlot4(numberOfRobots, room, percentageToClean, robotType, show):
     if show == True:
         plt.show()
 
-#showPlot4(5, {'width': 25, 'height': 25}, Robot)
+showPlot4(1, {'width': 25, 'height': 25}, 0.75, Robot, True)
 
 
 # === Problem 5
@@ -592,5 +592,5 @@ def showPlot5(method, robotTypesArray,numberOfRobots, room, percentageToClean):
     for robot in robotTypesArray:
         method(numberOfRobots, room, percentageToClean, robot, False)
     plt.show()
-#showPlot5(showPlot1, [RandomWalkRobot, RandomWalkRobot],1, 0.75, roomPlot1)
+showPlot5(showPlot1, [RandomWalkRobot,Robot],1 , 1.0, roomPlot1)
         
