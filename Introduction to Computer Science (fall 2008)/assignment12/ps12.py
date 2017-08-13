@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 # 6.00 Problem Set 12
 #
 # Name:
@@ -8,6 +9,7 @@ import numpy
 import random
 import pylab
 import matplotlib.pyplot as plt
+import collections
 
 class NoChildException(Exception):
     """
@@ -165,7 +167,7 @@ def problem2():
     plt.grid()
     plt.show()
     
-problem2()
+#problem2()
     
 #
 # PROBLEM 3
@@ -253,22 +255,21 @@ class ResistantVirus(SimpleVirus):
         maxBirthProb and clearProb values as this virus. Raises a
         NoChildException if this virus particle does not reproduce.         
         """
-        # TODO
-        #first checkc if the virus is resistance to all drugs
+        #first check if the virus is resistance to all drugs
         for drug in activeDrugs:
-            if getResistance(drug) == False:
+            if self.getResistance(drug) == False:
                 raise NoChildException()
         #reproduce with the probability
-        if random.random() <= self.maxBirthProb * (1 - popDensity):
+        if random.random() <= (self.maxBirthProb * (1 - popDensity)):
             
             resistanceInheritance = {}
-            for drug in self.resistance:
+            for drug in self.resistances:
                 #check inheritance probabilties
                 #active drugs list
-                if random.random() <= (1 - self.mutProb):
-                    resistanceInheritance[drug] = True
+                if random.random() <= self.mutProb:
+                    resistanceInheritance[drug] = not self.getResistance(drug)
                 else:
-                    resistanceInheritance[drug] = False
+                    resistanceInheritance[drug] = self.getResistance(drug)
             #generate a new instance of the class
             return ResistantVirus(self.maxBirthProb,
                                   self.clearProb,
@@ -296,7 +297,9 @@ class Patient(SimplePatient):
         
         maxPop: the  maximum virus population for this patient (an integer)
         """
-        # TODO
+        self.viruses = viruses
+        self.maxPop = maxPop
+        self.drugs = []
         
     def addPrescription(self, newDrug):
         """
@@ -308,7 +311,8 @@ class Patient(SimplePatient):
 
         postcondition: list of drugs being administered to a patient is updated
         """
-        # TODO
+        if newDrug not in self.drugs:
+            self.drugs.append(newDrug)
 
     def getPrescriptions(self):
         """
@@ -317,7 +321,7 @@ class Patient(SimplePatient):
         returns: The list of drug names (strings) being administered to this
         patient.
         """
-        # TODO
+        return self.drugs
         
     def getResistPop(self, drugResist):
         """
@@ -330,7 +334,18 @@ class Patient(SimplePatient):
         returns: the population of viruses (an integer) with resistances to all
         drugs in the drugResist list.
         """
-        # TODO
+        totalResistant = 0
+        
+        for virus in self.viruses:
+            drugs = 0
+            for drug in drugResist:
+                if virus.getResistance(drug) == True:
+                    drugs = drugs + 1
+            if drugs == len(drugResist):
+                #print 'found resistant', totalResistant
+                totalResistant = totalResistant + 1
+        return totalResistant
+                
 
     def update(self):
         """
@@ -351,7 +366,21 @@ class Patient(SimplePatient):
         returns: the total virus population at the end of the update (an
         integer)
         """
-        # TODO
+        newViruses = []
+        for virus in self.viruses:
+            if virus.doesClear() == True:
+                self.viruses.remove(virus)
+        self.popDensity = self.getTotalPop() / float(self.maxPop)
+        for virus in self.viruses:
+            try:
+                child = virus.reproduce(self.popDensity, self.getPrescriptions())
+                newViruses.append(child)
+            except NoChildException:
+                    continue
+        self.viruses.extend(newViruses)
+        #print 'the new poplulation is', len(self.viruses)
+        return self.getTotalPop()
+        
 
 #
 # PROBLEM 4
@@ -367,13 +396,36 @@ def problem4():
     total virus population vs. time  and guttagonol-resistant virus population
     vs. time are plotted
     """
-    # TODO
+    virusesList = []
+    maxBirthProb = 0.1
+    clearProb = 0.05
+    resistance = {'guttagonol':False}
+    mutProb = 0.005
+    resistantPop = []
+    for x in range(0, 100):
+        virusesList.append(ResistantVirus(maxBirthProb , clearProb, resistance, mutProb))
+    patient = Patient(virusesList, 1000)
+    populationList = []
+    for x in range(0,300):
+        if x == 150:
+            patient.addPrescription('guttagonol')
+        populationList.append(patient.update())
+        resistantPop.append(patient.getResistPop(['guttagonol']))
+    
+        
+    print resistantPop
+    plt.plot(list(range(0, 300)), populationList, list(range(0, 300)), resistantPop)
+    plt.xlabel('Time steps')
+    plt.ylabel('virus population')
+    plt.grid()
+    plt.show()
 
+#problem4()
 #
 # PROBLEM 5
 #
         
-def problem5():
+def problem5(numberOfPatients, delay):
     """
     Runs simulations and make histograms for problem 5.
 
@@ -384,13 +436,43 @@ def problem5():
     150, 75, 0 timesteps (followed by an additional 150 timesteps of
     simulation).    
     """
-    # TODO
-    
+    curedPatients = []
+    virusCount = []
+    for patient in range(1, numberOfPatients):
+        virusesList = []
+        maxBirthProb = 0.1
+        clearProb = 0.05
+        resistance = {'guttagonol':False}
+        mutProb = 0.005
+        for x in range(0, 100):
+            virusesList.append(ResistantVirus(maxBirthProb , clearProb, resistance, mutProb))
+        patient = Patient(virusesList, 1000)
+        for x in range(0,delay + 150):
+            if x == delay:
+                patient.addPrescription('guttagonol')
+            patient.update()
+            #print patient.getTotalPop()
+        
+        virusCount.append(patient.getTotalPop())
+        if patient.getTotalPop() <= 50:
+            curedPatients.append(patient)
+    #bins = numpy.linspace(-10, 1000, 10)
+    healedPercent = len(curedPatients)
+    print 'total cured patients is ', healedPercent
+    plt.figure()
+    plt.hist(virusCount)
+    plt.title('Treatment at %s and followed by 150 steps' %delay)
+    plt.xlabel('Total virus population, Percentage cured patients is %s ' % healedPercent)
+    plt.ylabel('Total patients')
+    plt.show()
+
+#problem5(100, 300)
+
 #
 # PROBLEM 6
 #
 
-def problem6():
+def problem6(numberOfPatients, firstDelay, secondDelay):
     """
     Runs simulations and make histograms for problem 6.
 
@@ -401,13 +483,47 @@ def problem6():
     150, 75, 0 timesteps between adding drugs (followed by an additional 150
     timesteps of simulation).
     """
-    # TODO
+    curedPatients = []
+    virusCount = []
+    for patient in range(1, numberOfPatients):
+        virusesList = []
+        maxBirthProb = 0.1
+        clearProb = 0.05
+        resistance = {'guttagonol': False, 'gimpex': False}
+        mutProb = 0.005
+        for x in range(0, 100):
+            virusesList.append(ResistantVirus(maxBirthProb , clearProb, resistance, mutProb))
+        patient = Patient(virusesList, 1000)
+        for x in range(0,firstDelay + secondDelay + 150):
+            if x == firstDelay:
+                patient.addPrescription('guttagonol')
+                print 'deoloyed guttagonol to patient blood'
+            if x == firstDelay + secondDelay:
+                patient.addPrescription('gimpex')
+                print 'deoloyed gimpex to patient blood'
+            patient.update()
+            #print patient.getTotalPop()
+        
+        virusCount.append(patient.getTotalPop())
+        if patient.getTotalPop() < 50:
+            curedPatients.append(patient)
+    healedPercent = len(curedPatients)
+    print 'total cured patients is ', healedPercent
+    plt.figure()
+    plt.hist(virusCount)
+    plt.title('At %s (guttagonol), At %s (gimpex) followed by 150 steps' %(firstDelay, firstDelay + secondDelay))
+    plt.xlabel('Total virus population, Percentage cured patients is %s ' % healedPercent)
+    plt.ylabel('Total patients')
+    plt.show()
+
+problem6(100, 150, 0)
+
 
 #
 # PROBLEM 7
 #
      
-def problem7():
+def problem7(firstDelay, secondDelay):
     """
     Run simulations and plot graphs examining the relationship between
     administration of multiple drugs and patient outcome.
@@ -416,4 +532,45 @@ def problem7():
     simulation with a 300 time step delay between administering the 2 drugs and
     a simulations for which drugs are administered simultaneously.        
     """
-    # TODO
+    guttagonolResistance = []
+    gimpexResistance = []
+    virusCount = []
+
+    virusesList = []
+    maxBirthProb = 0.1
+    clearProb = 0.05
+    resistance = {'guttagonol': False, 'gimpex': False}
+    mutProb = 0.005
+    for x in range(0, 100):
+        virusesList.append(ResistantVirus(maxBirthProb , clearProb, resistance, mutProb))
+    patient = Patient(virusesList, 1000)
+    for x in range(0,firstDelay + secondDelay + 150):
+        if x == firstDelay:
+            patient.addPrescription('guttagonol')
+            print 'deoloyed guttagonol to patient blood'
+        if x == firstDelay + secondDelay:
+            patient.addPrescription('gimpex')
+            print 'deoloyed gimpex to patient blood'
+        patient.update()
+        virusCount.append(patient.getTotalPop())
+        guttagonolResistance.append(patient.getResistPop(['guttagonol']))
+        gimpexResistance.append(patient.getResistPop(['gimpex']))
+    plt.figure()
+    virusLine, = plt.plot(list(range(0, firstDelay + secondDelay + 150)),
+                          virusCount,
+                          label='Total virus')
+    guttagonolLine, = plt.plot(list(range(0, firstDelay + secondDelay + 150)),
+             guttagonolResistance,
+             label='Guttagonol resistant virus')
+    gimpexLine, = plt.plot(list(range(0, firstDelay + secondDelay + 150)),
+             gimpexResistance,
+             label='Gimpex resistant virus'
+             )
+    plt.legend([virusLine, guttagonolLine, gimpexLine])
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
+    #plt.title('Virus population VS time')
+    plt.ylabel('Total virus population')
+    plt.xlabel('Time steps')
+    plt.show()
+#problem7(150, 0)
