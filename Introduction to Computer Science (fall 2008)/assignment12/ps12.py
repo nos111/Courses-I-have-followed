@@ -162,8 +162,9 @@ def problem2():
         populationList.append(patient.update())
 
     plt.plot(list(range(0, 300)), populationList)
-    plt.ylabel('Time steps')
-    plt.xlabel('virus population')
+    plt.title('Virus population VS Time')
+    plt.xlabel('Time steps')
+    plt.ylabel('virus population')
     plt.grid()
     plt.show()
     
@@ -414,13 +415,24 @@ def problem4():
     
         
     print resistantPop
-    plt.plot(list(range(0, 300)), populationList, list(range(0, 300)), resistantPop)
+    virusLine = plt.plot(list(range(0, 300)),
+                         populationList,
+                         label='Virus population'
+                         )
+    drugResistantLine = plt.plot(list(range(0, 300)),
+                                 resistantPop,
+                                 label='Drug resistant virus'
+                                 )
+    plt.legend([virusLine, drugResistantLine])
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
+    #plt.title('Virus and drug resistant population VS Time')
     plt.xlabel('Time steps')
     plt.ylabel('virus population')
     plt.grid()
     plt.show()
 
-#problem4()
+problem4()
 #
 # PROBLEM 5
 #
@@ -516,7 +528,7 @@ def problem6(numberOfPatients, firstDelay, secondDelay):
     plt.ylabel('Total patients')
     plt.show()
 
-problem6(100, 150, 0)
+#problem6(100, 150, 0)
 
 
 #
